@@ -1,0 +1,275 @@
+/* ============================================================================
+   About Page Stylesheet (Simplified & Enhanced) — SimuLearn
+   ============================================================================ */
+
+.about-page {
+  background-color: var(--color-bg-main);
+  color: var(--color-text-primary);
+  min-height: 100vh;
+  display: flex;
+  flex-direction: column;
+}
+
+/* --- Header / Navbar --- */
+.about-header {
+  position: fixed;
+  top: 0;
+  left: 0;
+  width: 100%;
+  z-index: 100;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding: 16px 48px;
+  background: rgba(15, 23, 42, 0.85);
+  backdrop-filter: blur(20px);
+  -webkit-backdrop-filter: blur(20px);
+  border-bottom: 1px solid rgba(51, 65, 85, 0.4);
+}
+
+.about-logo {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  text-decoration: none;
+}
+
+.about-nav {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+}
+
+.about-nav a {
+  text-decoration: none;
+}
+
+/* --- Main Layout --- */
+.about-main-content {
+  padding: 150px 32px 80px;
+  flex: 1;
+  width: 100%;
+  max-width: 1140px;
+  margin: 0 auto;
+}
+
+/* --- Hero Section --- */
+.about-badge {
+  display: inline-flex;
+  padding: 4px 14px;
+  background: rgba(34, 197, 94, 0.08);
+  border: 1px solid rgba(34, 197, 94, 0.25);
+  color: var(--color-primary);
+  border-radius: var(--radius-full);
+  font-size: 0.8rem;
+  font-weight: 500;
+  letter-spacing: 0.05em;
+  text-transform: uppercase;
+  margin-bottom: 20px;
+}
+
+.about-section h1 {
+  font-size: clamp(2.4rem, 5vw, 3.6rem);
+  font-weight: 800;
+  letter-spacing: -0.04em;
+  background: linear-gradient(135deg, var(--color-text-primary) 30%, var(--color-text-secondary) 100%);
+  background-clip: text;
+  -webkit-background-clip: text;
+  -webkit-text-fill-color: transparent;
+}
+
+.about-subtitle {
+  font-size: 1.15rem;
+  color: var(--color-text-secondary);
+  line-height: 1.75;
+}
+
+/* --- Creator Simple Info Card --- */
+.about-creator-simple {
+  background: rgba(30, 41, 59, 0.45);
+  border: 1px solid var(--color-border);
+  border-radius: var(--radius-lg);
+  padding: 36px 48px;
+  box-shadow: var(--shadow-lg), var(--shadow-glow);
+  margin-top: 36px;
+  margin-bottom: 64px; /* Spacious gap below the creator card */
+  backdrop-filter: blur(10px);
+}
+
+.section-badge-creator {
+  display: inline-flex;
+  padding: 3px 10px;
+  background: rgba(59, 130, 246, 0.1);
+  border: 1px solid rgba(59, 130, 246, 0.2);
+  color: #3b82f6;
+  border-radius: var(--radius-full);
+  font-size: 0.75rem;
+  text-transform: uppercase;
+  font-weight: 600;
+  letter-spacing: 0.05em;
+}
+
+.creator-name {
+  font-size: 1.85rem;
+  color: var(--color-text-primary);
+  letter-spacing: -0.02em;
+}
+
+.creator-title {
+  font-weight: 500;
+  letter-spacing: 0.02em;
+}
+
+/* --- Special Credits & Highlighted Cards --- */
+.section-badge-credits {
+  display: inline-flex;
+  padding: 3px 10px;
+  background: rgba(245, 158, 11, 0.1);
+  border: 1px solid rgba(245, 158, 11, 0.2);
+  color: #f59e0b;
+  border-radius: var(--radius-full);
+  font-size: 0.75rem;
+  text-transform: uppercase;
+  font-weight: 600;
+  letter-spacing: 0.05em;
+}
+
+.about-credits-highlighted {
+  margin-bottom: 64px; /* Spacious gap below credits section */
+}
+
+.about-credits-highlighted h2 {
+  font-size: 2rem;
+  font-weight: 800;
+  letter-spacing: -0.03em;
+}
+
+.credits-highlight-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(360px, 1fr));
+  gap: 24px;
+  margin-top: 36px;
+}
+
+.credit-highlight-card {
+  background: rgba(30, 41, 59, 0.45);
+  border: 1px solid var(--color-border);
+  border-radius: var(--radius-lg);
+  padding: 32px;
+  display: flex;
+  flex-direction: column;
+  justify-content: space-between;
+  min-height: 240px;
+  transition: all var(--transition-normal);
+  backdrop-filter: blur(10px);
+}
+
+.credit-highlight-card:hover {
+  transform: translateY(-3px);
+  box-shadow: var(--shadow-lg), var(--shadow-glow);
+  border-color: rgba(255, 255, 255, 0.15);
+}
+
+.credit-tag-badge {
+  letter-spacing: 0.02em;
+}
+
+.credit-link {
+  text-decoration: none;
+  font-weight: 700;
+  display: inline-flex;
+  align-items: center;
+  color: #10B981; /* High contrast emerald green! */
+  margin-top: 12px;
+  transition: color var(--transition-fast);
+}
+
+.credit-link:hover {
+  color: #34D399; /* Bright emerald green */
+  text-decoration: underline;
+}
+
+/* --- Open Source CTA --- */
+.opensource-card {
+  padding: 48px;
+  border-radius: var(--radius-lg);
+  background: radial-gradient(circle at top, rgba(34, 197, 94, 0.08), transparent);
+  border: 1px solid var(--color-border);
+  backdrop-filter: blur(10px);
+  box-shadow: var(--shadow-md);
+}
+
+.heart-icon-wrapper {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  width: 56px;
+  height: 56px;
+  background: rgba(239, 68, 68, 0.08);
+  border-radius: 50%;
+  border: 1px solid rgba(239, 68, 68, 0.2);
+}
+
+/* --- Footer --- */
+.about-footer {
+  padding: 40px 48px;
+  border-top: 1px solid var(--color-border);
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  flex-wrap: wrap;
+  gap: 16px;
+  background: rgba(15, 23, 42, 0.4);
+  margin-top: 48px;
+}
+
+.about-footer-text {
+  font-size: 0.82rem;
+  color: var(--color-text-muted);
+}
+
+.about-footer-links {
+  display: flex;
+  gap: 24px;
+}
+
+.about-footer-links a {
+  font-size: 0.82rem;
+  color: var(--color-text-secondary);
+  text-decoration: none;
+  transition: color var(--transition-fast);
+}
+
+.about-footer-links a:hover {
+  color: var(--color-primary);
+}
+
+/* --- Responsive Layouts --- */
+@media (max-width: 768px) {
+  .about-header {
+    padding: 16px 24px;
+  }
+
+  .about-main-content {
+    padding: 120px 20px 60px;
+  }
+
+  .about-creator-simple {
+    padding: 24px;
+  }
+
+  .credits-highlight-grid {
+    grid-template-columns: 1fr;
+  }
+
+  .opensource-card {
+    padding: 32px 20px;
+  }
+
+  .about-footer {
+    padding: 24px 20px;
+    flex-direction: column;
+    text-align: center;
+    gap: 16px;
+  }
+}

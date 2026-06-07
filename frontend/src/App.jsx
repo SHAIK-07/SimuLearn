@@ -3,6 +3,7 @@ import { useAuth } from './context/AuthContext'
 import LandingPage from './pages/LandingPage'
 import AuthPage from './pages/AuthPage'
 import Dashboard from './pages/Dashboard'
+import AboutPage from './pages/AboutPage'
 
 function ProtectedRoute({ children }) {
   const { user, loading } = useAuth()
@@ -15,6 +16,7 @@ function App() {
     <Routes>
       <Route path="/" element={<LandingPage />} />
       <Route path="/auth" element={<AuthPage />} />
+      <Route path="/about" element={<AboutPage />} />
       <Route
         path="/dashboard"
         element={
