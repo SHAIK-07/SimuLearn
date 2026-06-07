@@ -1,7 +1,7 @@
 import uvicorn
 from fastapi import FastAPI
 from fastapi.middleware.cors import CORSMiddleware
-from app.routers import admin
+from app.routers import admin, courses
 
 app = FastAPI(
     title="SimuLearn API Engine", 
@@ -27,6 +27,7 @@ app.add_middleware(
 
 # Register routers
 app.include_router(admin.router, prefix="/api/v1/admin", tags=["admin"])
+app.include_router(courses.router, prefix="/api/v1/courses", tags=["courses"])
 
 @app.get("/")
 async def root():

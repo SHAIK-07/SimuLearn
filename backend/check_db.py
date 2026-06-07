@@ -6,7 +6,7 @@ env_path = os.path.abspath(os.path.join(os.path.dirname(__file__), "../.env"))
 load_dotenv(env_path)
 
 url = os.getenv("VITE_SUPABASE_URL")
-key = os.getenv("VITE_SUPABASE_PUBLISHABLE_KEY")
+key = os.getenv("SUPABASE_SERVICE_ROLE_KEY") or os.getenv("VITE_SUPABASE_PUBLISHABLE_KEY")
 
 print("URL:", url)
 print("Key exists:", bool(key))

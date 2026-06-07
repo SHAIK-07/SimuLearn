@@ -106,7 +106,22 @@ def sync_courses_filesystem_to_db(supabase_client: Client, courses_root_dir: str
                 print(f"Error syncing topic {topic_slug}: {e}")
                 continue
                 
-            # 3. Create default Simple, Medium, and Hard simulation lessons
+            # 3. Read quiz questions if quiz.json exists
+            quiz_file_path = os.path.join(c_path, t_dir, ".tutorial", "quiz.json")
+            quiz_questions = []
+            if os.path.exists(quiz_file_path):
+                try:
+                    import json
+                    with open(quiz_file_path, "r", encoding="utf-8") as f:
+                        quiz_data = json.load(f)
+                    if isinstance(quiz_data, dict):
+                        quiz_questions = quiz_data.get("questions", [])
+                    elif isinstance(quiz_data, list):
+                        quiz_questions = quiz_data
+                except Exception as e:
+                    print(f"Error reading/parsing quiz.json for {topic_slug}: {e}")
+
+            # 4. Create default Simple, Medium, and Hard simulation lessons
             for difficulty_level in ["Simple", "Medium", "Hard"]:
                 lesson_idx = 1 if difficulty_level == "Simple" else (2 if difficulty_level == "Medium" else 3)
                 lesson_slug = f"{topic_slug}-{difficulty_level.lower()}"
@@ -114,13 +129,33 @@ def sync_courses_filesystem_to_db(supabase_client: Client, courses_root_dir: str
                 # Relativize path for frontend fetching/reading
                 content_path = os.path.relpath(md_file_path, courses_root_dir).replace("\\", "/")
                 
+                # Load markdown and code contents
+                markdown_content = ""
+                if os.path.exists(md_file_path):
+                    try:
+                        with open(md_file_path, "r", encoding="utf-8") as f:
+                            markdown_content = f.read()
+                    except Exception as e:
+                        print(f"Error reading {md_file_path}: {e}")
+
+                code_content = ""
+                code_file_path = os.path.join(c_path, t_dir, "main.py")
+                if os.path.exists(code_file_path):
+                    try:
+                        with open(code_file_path, "r", encoding="utf-8") as f:
+                            code_content = f.read()
+                    except Exception as e:
+                        print(f"Error reading {code_file_path}: {e}")
+
                 lesson_data = {
                     "slug": lesson_slug,
                     "topic_slug": topic_slug,
                     "title": f"{topic_title} ({difficulty_level} Mode)",
                     "content_path": content_path,
                     "difficulty_level": difficulty_level,
-                    "order_index": lesson_idx
+                    "order_index": lesson_idx,
+                    "content_markdown": markdown_content,
+                    "code_content": code_content
                 }
                 
                 try:
@@ -129,6 +164,29 @@ def sync_courses_filesystem_to_db(supabase_client: Client, courses_root_dir: str
                 except Exception as e:
                     print(f"Error syncing lesson {lesson_slug}: {e}")
                     continue
+
+                # Filter and upsert quiz questions for this lesson
+                # stage "pre" for Simple/Medium, stage "post" for Hard
+                lesson_questions = []
+                for q in quiz_questions:
+                    stage = q.get("stage", "")
+                    if difficulty_level in ["Simple", "Medium"]:
+                        if stage == "pre" or not stage:
+                            lesson_questions.append(q)
+                    elif difficulty_level == "Hard":
+                        if stage == "post" or not stage:
+                            lesson_questions.append(q)
+
+                if lesson_questions:
+                    quiz_data = {
+                        "lesson_slug": lesson_slug,
+                        "questions": lesson_questions,
+                        "passing_score": 70
+                    }
+                    try:
+                        supabase_client.table("quizzes").upsert(quiz_data, on_conflict="lesson_slug").execute()
+                    except Exception as e:
+                        print(f"Error syncing quiz for lesson {lesson_slug}: {e}")
                     
         sync_results["details"].append(f"Successfully synced {course_slug} with {len(topic_dirs)} topics.")
         

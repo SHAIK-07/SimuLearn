@@ -4,6 +4,9 @@ import LandingPage from './pages/LandingPage'
 import AuthPage from './pages/AuthPage'
 import Dashboard from './pages/Dashboard'
 import AboutPage from './pages/AboutPage'
+import CourseOverview from './pages/CourseOverview'
+import CourseViewer from './pages/CourseViewer'
+import QuizPage from './pages/QuizPage'
 
 function ProtectedRoute({ children }) {
   const { user, loading } = useAuth()
@@ -22,6 +25,30 @@ function App() {
         element={
           <ProtectedRoute>
             <Dashboard />
+          </ProtectedRoute>
+        }
+      />
+      <Route
+        path="/courses/:courseSlug"
+        element={
+          <ProtectedRoute>
+            <CourseOverview />
+          </ProtectedRoute>
+        }
+      />
+      <Route
+        path="/courses/:courseSlug/topics/:topicSlug"
+        element={
+          <ProtectedRoute>
+            <CourseViewer />
+          </ProtectedRoute>
+        }
+      />
+      <Route
+        path="/courses/:courseSlug/quizzes/:quizId"
+        element={
+          <ProtectedRoute>
+            <QuizPage />
           </ProtectedRoute>
         }
       />

@@ -5,7 +5,7 @@ from app.config import settings
 # Initialize Supabase client
 supabase_client: Client = create_client(settings.SUPABASE_URL, settings.SUPABASE_KEY)
 
-async def get_current_user(authorization: str = Header(None)):
+def get_current_user(authorization: str = Header(None)):
     """
     FastAPI dependency that validates the Bearer token against Supabase Auth.
     """
