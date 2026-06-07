@@ -6,6 +6,76 @@ import { supabase } from '../lib/supabase'
 import { BACKEND_URL } from '../lib/api'
 import Logo from '../components/Logo'
 import './CourseViewer.css'
+import mermaid from 'mermaid'
+
+// Initialize mermaid
+mermaid.initialize({
+  startOnLoad: false,
+  theme: 'dark',
+  securityLevel: 'loose',
+  themeVariables: {
+    background: '#1e293b',
+    primaryColor: '#22c55e',
+    primaryTextColor: '#f8fafc',
+    lineColor: '#334155',
+  }
+})
+
+let mermaidCounter = 0
+
+function MermaidRenderer({ chart }) {
+  const containerRef = useRef(null)
+  const [svg, setSvg] = useState('')
+  const [error, setError] = useState(null)
+
+  useEffect(() => {
+    let isMounted = true
+    const id = `mermaid-chart-${++mermaidCounter}`
+
+    const renderChart = async () => {
+      try {
+        setError(null)
+        if (containerRef.current) {
+          containerRef.current.innerHTML = ''
+        }
+        const { svg: renderedSvg } = await mermaid.render(id, chart)
+        if (isMounted) {
+          setSvg(renderedSvg)
+        }
+      } catch (err) {
+        console.error('Mermaid render error:', err)
+        if (isMounted) {
+          setError(err.message || 'Syntax Error in Mermaid diagram')
+        }
+        const badge = document.getElementById(id)
+        if (badge) badge.remove()
+      }
+    }
+
+    renderChart()
+
+    return () => {
+      isMounted = false
+    }
+  }, [chart])
+
+  if (error) {
+    return (
+      <div className="mermaid-error">
+        <span className="error-title">Mermaid Render Error</span>
+        <pre>{chart}</pre>
+      </div>
+    )
+  }
+
+  return (
+    <div 
+      ref={containerRef} 
+      className="mermaid-container"
+      dangerouslySetInnerHTML={{ __html: svg }}
+    />
+  )
+}
 
 /* ================================================================
    LIGHTWEIGHT CUSTOM MARKDOWN & SYNTAX HIGHLIGHTER
@@ -30,20 +100,26 @@ function MarkdownRenderer({ content }) {
           // Close code block
           inCodeBlock = false
           const codeString = codeLines.join('\n')
-          elements.push(
-            <pre key={`code-${i}`} className={`code-block lang-${codeLang}`}>
-              <div className="code-block-header">
-                <span>{codeLang || 'code'}</span>
-                <button 
-                  className="btn-copy-code"
-                  onClick={() => navigator.clipboard.writeText(codeString)}
-                >
-                  Copy
-                </button>
-              </div>
-              <code>{codeString}</code>
-            </pre>
-          )
+          if (codeLang === 'mermaid') {
+            elements.push(
+              <MermaidRenderer key={`mermaid-${i}`} chart={codeString} />
+            )
+          } else {
+            elements.push(
+              <pre key={`code-${i}`} className={`code-block lang-${codeLang}`}>
+                <div className="code-block-header">
+                  <span>{codeLang || 'code'}</span>
+                  <button 
+                    className="btn-copy-code"
+                    onClick={() => navigator.clipboard.writeText(codeString)}
+                  >
+                    Copy
+                  </button>
+                </div>
+                <code>{codeString}</code>
+              </pre>
+            )
+          }
           codeLines = []
         } else {
           // Open code block
@@ -55,6 +131,54 @@ function MarkdownRenderer({ content }) {
 
       if (inCodeBlock) {
         codeLines.push(line)
+        continue
+      }
+
+      // Tables parsing
+      if (line.trim().startsWith('|') && line.trim().endsWith('|')) {
+        const tableLines = []
+        while (i < lines.length && lines[i].trim().startsWith('|') && lines[i].trim().endsWith('|')) {
+          tableLines.push(lines[i])
+          i++
+        }
+        i-- // backtrack since loop increments
+
+        if (tableLines.length >= 2) {
+          const rawHeaders = tableLines[0].split('|').map(s => s.trim()).filter((s, idx) => idx > 0 && idx < tableLines[0].split('|').length - 1)
+          const isDivider = /^\|[\s-|-|:|]*\|$/.test(tableLines[1].trim())
+          const startIdx = isDivider ? 2 : 1
+          
+          const rows = []
+          for (let r = startIdx; r < tableLines.length; r++) {
+            const rawCells = tableLines[r].split('|').map(s => s.trim()).filter((s, idx) => idx > 0 && idx < tableLines[r].split('|').length - 1)
+            rows.push(rawCells)
+          }
+
+          elements.push(
+            <div className="table-responsive" key={`table-${i}`}>
+              <table className="md-table">
+                <thead>
+                  <tr>
+                    {rawHeaders.map((h, idx) => (
+                      <th key={idx}>{parseInline(h)}</th>
+                    ))}
+                  </tr>
+                </thead>
+                <tbody>
+                  {rows.map((row, rIdx) => (
+                    <tr key={rIdx}>
+                      {row.map((cell, cIdx) => (
+                        <td key={cIdx}>{parseInline(cell)}</td>
+                      ))}
+                    </tr>
+                  ))}
+                </tbody>
+              </table>
+            </div>
+          )
+        } else {
+          elements.push(<p key={i}>{parseInline(line)}</p>)
+        }
         continue
       }
 
@@ -93,15 +217,7 @@ function MarkdownRenderer({ content }) {
     const boldRegex = /\*\*(.*?)\*\*/g
     const codeRegex = /`(.*?)`/g
     
-    // Quick parsing of bold and inline code
-    let parts = [text]
-    
-    // Process inline code first
     let textStr = text
-    let matches = []
-    let match
-    
-    // Extremely basic replacement for presentation
     return <span dangerouslySetInnerHTML={{ 
       __html: textStr
         .replace(boldRegex, '<strong>$1</strong>')
