@@ -17,6 +17,7 @@ origins = [
     "https://simulearn.vercel.app",
     "https://simu-learn.vercel.app",
     "https://simu-learn-teal.vercel.app",
+    "https://simulation-learn.vercel.app",
 ]
 
 # Allow additional origins from environment variable if set
