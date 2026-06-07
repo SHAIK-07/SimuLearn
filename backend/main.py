@@ -1,3 +1,4 @@
+import os
 import uvicorn
 from fastapi import FastAPI
 from fastapi.middleware.cors import CORSMiddleware
@@ -14,8 +15,14 @@ origins = [
     "http://localhost:5173",
     "http://localhost:3000",
     "https://simulearn.vercel.app",
-    "https://simu-learn.vercel.app"
+    "https://simu-learn.vercel.app",
+    "https://simu-learn-teal.vercel.app",
 ]
+
+# Allow additional origins from environment variable if set
+env_origins = os.getenv("CORS_ORIGINS")
+if env_origins:
+    origins.extend([origin.strip() for origin in env_origins.split(",") if origin.strip()])
 
 app.add_middleware(
     CORSMiddleware,

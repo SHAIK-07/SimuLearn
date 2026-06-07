@@ -1,4 +1,4 @@
-import { useState } from 'react'
+import { useState, useEffect } from 'react'
 import { Link, useNavigate } from 'react-router-dom'
 import { motion, AnimatePresence } from 'framer-motion'
 import { ArrowLeft, AlertCircle, CheckCircle2 } from 'lucide-react'
@@ -19,8 +19,13 @@ export default function AuthPage() {
   const navigate = useNavigate()
 
   // If already logged in, redirect to dashboard
+  useEffect(() => {
+    if (user) {
+      navigate('/dashboard', { replace: true })
+    }
+  }, [user, navigate])
+
   if (user) {
-    navigate('/dashboard', { replace: true })
     return null
   }
 
